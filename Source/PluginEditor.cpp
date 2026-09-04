@@ -1,6 +1,6 @@
 #include "PluginEditor.h"
 
-G3XPressureAudioProcessorEditor::G3XPressureAudioProcessorEditor(G3XPressureAudioProcessor& p)
+G3XOnePressureAudioProcessorEditor::G3XOnePressureAudioProcessorEditor(G3XOnePressureAudioProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
 {
     setLookAndFeel(&lookAndFeel);
@@ -44,12 +44,12 @@ G3XPressureAudioProcessorEditor::G3XPressureAudioProcessorEditor(G3XPressureAudi
     startTimerHz(45);
 }
 
-G3XPressureAudioProcessorEditor::~G3XPressureAudioProcessorEditor()
+G3XOnePressureAudioProcessorEditor::~G3XOnePressureAudioProcessorEditor()
 {
     setLookAndFeel(nullptr);
 }
 
-void G3XPressureAudioProcessorEditor::paint(juce::Graphics& g)
+void G3XOnePressureAudioProcessorEditor::paint(juce::Graphics& g)
 {
     using C = g3x::ui::Colours;
     g.fillAll(juce::Colour(C::background));
@@ -63,7 +63,7 @@ void G3XPressureAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::FontOptions { 22.0f }.withStyle("Bold"));
     g.drawText("G3X", 24, 20, 64, 28, juce::Justification::centredLeft);
     g.setColour(juce::Colour(C::cyan));
-    g.drawText("PRESSURE", 83, 20, 150, 28, juce::Justification::centredLeft);
+    g.drawText("ONE PRESSURE", 83, 20, 150, 28, juce::Justification::centredLeft);
 
     const auto panel = juce::Rectangle<float>(22.0f, 68.0f, area.getWidth() - 44.0f, area.getHeight() - 90.0f);
     g.setColour(juce::Colour(C::panel));
@@ -85,7 +85,7 @@ void G3XPressureAudioProcessorEditor::paint(juce::Graphics& g)
     }
 }
 
-void G3XPressureAudioProcessorEditor::resized()
+void G3XOnePressureAudioProcessorEditor::resized()
 {
     auto panel = getLocalBounds().reduced(30);
     panel.removeFromTop(55);
@@ -101,7 +101,7 @@ void G3XPressureAudioProcessorEditor::resized()
     pressure.setBounds(panel.reduced(9, 0));
 }
 
-void G3XPressureAudioProcessorEditor::timerCallback()
+void G3XOnePressureAudioProcessorEditor::timerCallback()
 {
     const auto& values = processor.getMeters();
     meter.setLevel(values.inputDb[0].load(std::memory_order_relaxed),

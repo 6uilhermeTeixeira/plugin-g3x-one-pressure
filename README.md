@@ -1,4 +1,4 @@
-# G3X Pressure
+# G3X One Pressure
 
 Compressor de caráter com um único macrocontrole, desenvolvido em C++20, JUCE
 8.0.8 e CMake. Produz VST3 e aplicativo Standalone com DSP, interface e presets
@@ -28,7 +28,7 @@ ctest --test-dir build -C Release --output-on-failure
 ```
 
 No Linux, instale ALSA, FreeType, Fontconfig e OpenGL. Os artefatos ficam em
-`build/G3XPressure_artefacts/Release/`. No Windows, use Visual Studio/MSVC e uma
+`build/G3XOnePressure_artefacts/Release/`. No Windows, use Visual Studio/MSVC e uma
 configuração Release de 64 bits.
 
 ## Parâmetros
@@ -51,5 +51,9 @@ sessão e áudio no FL Studio antes de considerar M4 concluído.
 ## Independência
 
 O produto Waves foi consultado apenas como referência de categoria e ergonomia.
-O G3X Pressure não reutiliza marca, assets, interface, presets ou algoritmo da
+O G3X One Pressure não reutiliza marca, assets, interface, presets ou algoritmo da
 referência. Veja [fontes e limites de uso](docs/references/README.md).
+
+## Licença
+
+Distribuído sob a [licença MIT](LICENSE).

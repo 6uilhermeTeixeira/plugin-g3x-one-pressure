@@ -1,4 +1,4 @@
-# G3X Pressure — Product Requirements Document
+# G3X One Pressure — Product Requirements Document
 
 **Versão:** 0.1.0  
 **Status:** alpha funcional; validação auditiva e de hosts pendente
@@ -7,7 +7,7 @@
 
 ## 1. Visão
 
-G3X Pressure é um compressor de caráter para bateria, loops, buses e fontes
+G3X One Pressure é um compressor de caráter para bateria, loops, buses e fontes
 dinâmicas. Um macrocontrole percorre compressão paralela leve, punch, pumping e
 squash agressivo, preservando rapidez de uso e uma assinatura sonora própria.
 
@@ -105,7 +105,7 @@ Input -> trim -> detector estéreo linkado -> compressor program-dependent
 
 ## 11. Decisões para confirmação
 
-- Nome `G3X Pressure`; manter Input em três estados ou apenas Pad/Boost.
+- Nome `G3X One Pressure`; manter Input em três estados ou apenas Pad/Boost.
 - Saturação audível nos valores altos ou compressão limpa.
 - Exibir redução de ganho ou manter visual literalmente minimalista.
 - Zero latência absoluto ou modo opcional com lookahead.

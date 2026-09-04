@@ -71,6 +71,6 @@ int main()
     expect(engine.getMeters().gainReductionDb.load() < -6.0f,
            "sustained material keeps the compressor engaged after the sidechain HPF");
 
-    if (failures == 0) std::cout << "All G3X Pressure DSP tests passed\n";
+    if (failures == 0) std::cout << "All G3X One Pressure DSP tests passed\n";
     return failures == 0 ? 0 : 1;
 }

@@ -3,12 +3,12 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "Dsp/PressureEngine.h"
 
-class G3XPressureAudioProcessor final : public juce::AudioProcessor
+class G3XOnePressureAudioProcessor final : public juce::AudioProcessor
 {
 public:
     using AudioProcessor::processBlock;
-    G3XPressureAudioProcessor();
-    ~G3XPressureAudioProcessor() override = default;
+    G3XOnePressureAudioProcessor();
+    ~G3XOnePressureAudioProcessor() override = default;
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override {}
@@ -39,5 +39,5 @@ private:
     std::atomic<float>* amount = nullptr;
     std::atomic<float>* inputMode = nullptr;
     int currentProgram = 0;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(G3XPressureAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(G3XOnePressureAudioProcessor)
 };
