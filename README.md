@@ -1,15 +1,55 @@
 # G3X Pressure
 
-Compressor de caráter com um macrocontrole, planejado em C++20, JUCE e CMake.
-A entrega inicial será VST3 64-bit para Windows e Standalone para desenvolvimento.
+Compressor de caráter com um único macrocontrole, desenvolvido em C++20, JUCE
+8.0.8 e CMake. Produz VST3 e aplicativo Standalone com DSP, interface e presets
+originais baseados nos requisitos do [PRD](PRD.md).
 
-**Estado:** M0 — definição aguardando confirmação.
+## Recursos
 
-- [PRD](PRD.md)
-- [Referência visual e fontes](docs/references/README.md)
+- Macro Pressure 0–10: compressão paralela leve, punch, pumping e squash.
+- Input em três estados: Pad (-6 dB), Normal e Drive (+6 dB).
+- Detector peak/RMS estéreo linkado com sidechain HPF em 80 Hz.
+- Mapeamento contínuo de threshold, ratio, attack, release, knee e dry/wet.
+- Makeup controlado e saturação suave no terço final da escala.
+- Identidade exata em Pressure 0 com Input Normal.
+- Medidor de gain reduction e LEDs de pico de entrada e saída.
+- Automação suave, estado versionado e seis presets expostos ao host.
+- Interface compacta, redimensionável, HiDPI e acessível por teclado.
 
-![Referência Waves OneKnob Pressure](docs/references/waves-oneknob-pressure-interface.png)
+## Compilar
 
-O produto será funcionalmente inspirado no fluxo de um controle, mas terá DSP,
-marca, código, interface, textos e presets originais.
+Pré-requisitos: CMake 3.22+, compilador C++20 e Git. O JUCE é obtido em versão
+fixada pelo CMake.
 
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release --parallel
+ctest --test-dir build -C Release --output-on-failure
+```
+
+No Linux, instale ALSA, FreeType, Fontconfig e OpenGL. Os artefatos ficam em
+`build/G3XPressure_artefacts/Release/`. No Windows, use Visual Studio/MSVC e uma
+configuração Release de 64 bits.
+
+## Parâmetros
+
+| Parâmetro | Valores | Padrão |
+|---|---|---|
+| Pressure | 0.0–10.0 | 0.0 |
+| Input | Pad / Normal / Drive | Normal |
+
+## Presets
+
+Neutral, Drum Glue, Parallel Punch, Room Pump, Loop Smash e Aggressive Bus.
+
+## Estado
+
+Alpha funcional, concluída até M3 e preparada para M4. O próximo passo é baixar
+o artefato Windows da CI e validar manualmente VST3, automação, restauração de
+sessão e áudio no FL Studio antes de considerar M4 concluído.
+
+## Independência
+
+O produto Waves foi consultado apenas como referência de categoria e ergonomia.
+O G3X Pressure não reutiliza marca, assets, interface, presets ou algoritmo da
+referência. Veja [fontes e limites de uso](docs/references/README.md).

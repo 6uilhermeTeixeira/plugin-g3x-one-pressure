@@ -1,7 +1,7 @@
 # G3X Pressure — Product Requirements Document
 
 **Versão:** 0.1.0  
-**Status:** proposta para confirmação  
+**Status:** alpha funcional; validação auditiva e de hosts pendente
 **Target:** C++20, JUCE fixado e CMake  
 **Entrega inicial:** VST3 64-bit para Windows; Standalone para desenvolvimento
 
@@ -117,4 +117,3 @@ Input -> trim -> detector estéreo linkado -> compressor program-dependent
 - [Imagem oficial](https://media.wavescdn.com/images/products/plugins/600/oneknob-pressure.png)
 
 Consulta em 4 de setembro de 2026; fontes usadas apenas como referência.
-

@@ -1,9 +1,9 @@
-build/
-.cache/
+/build/
+/build-*/
+/.cache/
 .idea/
 .vscode/
 *.user
 *.suo
 *.log
 .DS_Store
-
