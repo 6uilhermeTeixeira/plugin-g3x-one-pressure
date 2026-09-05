@@ -5,6 +5,7 @@ namespace IDs
 {
 constexpr auto amount = "amount";
 constexpr auto inputMode = "inputMode";
+constexpr auto bypass = "bypass";
 }
 
 G3XOnePressureAudioProcessor::G3XOnePressureAudioProcessor()
@@ -14,6 +15,7 @@ G3XOnePressureAudioProcessor::G3XOnePressureAudioProcessor()
 {
     amount = state.getRawParameterValue(IDs::amount);
     inputMode = state.getRawParameterValue(IDs::inputMode);
+    bypass = state.getRawParameterValue(IDs::bypass);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout G3XOnePressureAudioProcessor::createParameterLayout()
@@ -27,6 +29,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout G3XOnePressureAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID { IDs::inputMode, 1 }, "Input",
         juce::StringArray { "Pad", "Normal", "Drive" }, 1));
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID { IDs::bypass, 1 }, "Bypass", false));
     return layout;
 }
 
@@ -46,6 +50,8 @@ void G3XOnePressureAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
 {
     for (int channel = getTotalNumInputChannels(); channel < getTotalNumOutputChannels(); ++channel)
         buffer.clear(channel, 0, buffer.getNumSamples());
+    if (bypass->load() >= 0.5f)
+        return;
     engine.setAmount(amount->load() * 0.1f);
     engine.setInputMode(static_cast<g3x::InputMode>(juce::roundToInt(inputMode->load())));
     engine.process(buffer);
@@ -87,6 +93,7 @@ void G3XOnePressureAudioProcessor::setCurrentProgram(int index)
     };
     set(IDs::amount, amounts[static_cast<size_t>(index)]);
     set(IDs::inputMode, modes[static_cast<size_t>(index)]);
+    set(IDs::bypass, 0.0f);
 }
 
 juce::AudioProcessorEditor* G3XOnePressureAudioProcessor::createEditor()

@@ -38,6 +38,7 @@ private:
     g3x::PressureEngine engine;
     std::atomic<float>* amount = nullptr;
     std::atomic<float>* inputMode = nullptr;
+    std::atomic<float>* bypass = nullptr;
     int currentProgram = 0;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(G3XOnePressureAudioProcessor)
 };

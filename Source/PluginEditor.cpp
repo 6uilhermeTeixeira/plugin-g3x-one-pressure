@@ -5,12 +5,12 @@ G3XOnePressureAudioProcessorEditor::G3XOnePressureAudioProcessorEditor(G3XOnePre
 {
     setLookAndFeel(&lookAndFeel);
     setResizable(true, true);
-    setResizeLimits(360, 460, 720, 920);
-    getConstrainer()->setFixedAspectRatio(0.7826);
-    setSize(450, 575);
+    setResizeLimits(420, 454, 760, 821);
+    getConstrainer()->setFixedAspectRatio(500.0 / 540.0);
+    setSize(500, 540);
 
     pressure.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    pressure.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 104, 38);
+    pressure.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 30);
     pressure.setNumDecimalPlacesToDisplay(1);
     pressure.setDoubleClickReturnValue(true, 0.0);
     pressure.setTitle("Pressure");
@@ -21,6 +21,22 @@ G3XOnePressureAudioProcessorEditor::G3XOnePressureAudioProcessorEditor(G3XOnePre
     inputMode.setTitle("Input");
     inputMode.setDescription("Input level: Pad minus six dB, Normal, or Drive plus six dB");
     addAndMakeVisible(inputMode);
+
+    for (int index = 0; index < processor.getNumPrograms(); ++index)
+        presetBox.addItem(processor.getProgramName(index), index + 1);
+    presetBox.setSelectedItemIndex(processor.getCurrentProgram(), juce::dontSendNotification);
+    presetBox.setTitle("Factory preset");
+    presetBox.setDescription("Loads a G3X One Pressure starting point");
+    presetBox.onChange = [this] { processor.setCurrentProgram(presetBox.getSelectedItemIndex()); };
+    bypassButton.setTitle("Plugin bypass");
+    bypassButton.setDescription("Bypasses pressure processing");
+    statusLabel.setText("CHARACTER COMPRESSION", juce::dontSendNotification);
+    statusLabel.setJustificationType(juce::Justification::centredRight);
+    statusLabel.setColour(juce::Label::textColourId, juce::Colour(g3x::ui::Colours::muted));
+    statusLabel.setFont(juce::FontOptions { 10.0f }.withStyle("Bold"));
+    for (auto* component : std::initializer_list<juce::Component*> {
+             &presetBox, &bypassButton, &statusLabel })
+        addAndMakeVisible(component);
 
     inputLabel.setText("INPUT", juce::dontSendNotification);
     reductionLabel.setText("GAIN REDUCTION", juce::dontSendNotification);
@@ -41,64 +57,65 @@ G3XOnePressureAudioProcessorEditor::G3XOnePressureAudioProcessorEditor(G3XOnePre
         p.state, "amount", pressure);
     inputAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         p.state, "inputMode", inputMode);
+    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        p.state, "bypass", bypassButton);
     startTimerHz(45);
 }
 
 G3XOnePressureAudioProcessorEditor::~G3XOnePressureAudioProcessorEditor()
 {
+    stopTimer();
     setLookAndFeel(nullptr);
 }
 
 void G3XOnePressureAudioProcessorEditor::paint(juce::Graphics& g)
 {
     using C = g3x::ui::Colours;
-    g.fillAll(juce::Colour(C::background));
     auto area = getLocalBounds().toFloat();
-    juce::ColourGradient glow(juce::Colour(C::violet).withAlpha(0.14f), area.getCentreX(), area.getCentreY(),
-                              juce::Colours::transparentBlack, 0.0f, area.getBottom(), true);
-    g.setGradientFill(glow);
-    g.fillRect(area);
-
-    g.setColour(juce::Colour(C::ink));
-    g.setFont(juce::FontOptions { 22.0f }.withStyle("Bold"));
-    g.drawText("G3X", 24, 20, 64, 28, juce::Justification::centredLeft);
+    g.setGradientFill({ juce::Colour(C::panel).brighter(0.06f), 0.0f, 0.0f,
+                        juce::Colour(C::background), 0.0f, area.getBottom(), false });
+    g.fillAll();
+    auto header = getLocalBounds().removeFromTop(78);
     g.setColour(juce::Colour(C::cyan));
-    g.drawText("ONE PRESSURE", 83, 20, 150, 28, juce::Justification::centredLeft);
-
-    const auto panel = juce::Rectangle<float>(22.0f, 68.0f, area.getWidth() - 44.0f, area.getHeight() - 90.0f);
+    g.fillRect(header.removeFromBottom(2));
+    g.setColour(juce::Colour(C::ink));
+    g.setFont(juce::FontOptions { 25.0f }.withStyle("Bold"));
+    g.drawText("G3X", header.reduced(22, 8).removeFromLeft(68), juce::Justification::centredLeft);
+    g.setColour(juce::Colour(C::violet));
+    g.setFont(juce::FontOptions { 17.0f });
+    g.drawFittedText("ONE PRESSURE", { 88, 8, 96, 60 }, juce::Justification::centredLeft,
+                     1, 0.65f);
+    const auto panel = juce::Rectangle<float>(20.0f, 92.0f, area.getWidth() - 40.0f,
+                                               area.getHeight() - 126.0f);
     g.setColour(juce::Colour(C::panel));
     g.fillRoundedRectangle(panel, 18.0f);
     g.setColour(juce::Colour(C::cyan).withAlpha(0.18f));
     g.drawRoundedRectangle(panel, 18.0f, 1.0f);
 
-    auto dial = pressure.getBounds().toFloat().reduced(21.0f, 42.0f);
-    g.setFont(juce::FontOptions { 10.0f }.withStyle("Bold"));
     g.setColour(juce::Colour(C::muted));
-    for (int i = 0; i <= 10; ++i)
-    {
-        const auto angle = juce::jmap(static_cast<float>(i), 0.0f, 10.0f,
-                                     juce::MathConstants<float>::pi * 1.2f,
-                                     juce::MathConstants<float>::pi * 2.8f);
-        const auto point = dial.getCentre().getPointOnCircumference(dial.getWidth() * 0.52f, angle);
-        g.drawText(juce::String(i), static_cast<int>(point.x - 9.0f), static_cast<int>(point.y - 7.0f),
-                   18, 14, juce::Justification::centred);
-    }
+    g.setFont(juce::FontOptions { 9.0f });
+    g.drawText("WEIGHT  /  PUNCH  /  GLUE", getLocalBounds().removeFromBottom(24),
+               juce::Justification::centred);
 }
 
 void G3XOnePressureAudioProcessorEditor::resized()
 {
-    auto panel = getLocalBounds().reduced(30);
-    panel.removeFromTop(55);
-    auto input = panel.removeFromBottom(62);
-    inputLabel.setBounds(input.removeFromLeft(64));
-    inputMode.setBounds(input.reduced(4, 11));
-    auto meterArea = panel.removeFromBottom(66);
+    auto header = getLocalBounds().removeFromTop(78).reduced(18, 17);
+    bypassButton.setBounds(header.removeFromRight(80));
+    header.removeFromRight(8);
+    presetBox.setBounds(header.removeFromRight(210));
+    auto body = getLocalBounds().withTrimmedTop(104).withTrimmedBottom(46).reduced(32, 0);
+    auto meterArea = body.removeFromBottom(58);
     auto meterLabels = meterArea.removeFromTop(18);
     inputLedLabel.setBounds(meterLabels.removeFromLeft(44));
     outputLedLabel.setBounds(meterLabels.removeFromRight(44));
     reductionLabel.setBounds(meterLabels);
     meter.setBounds(meterArea.reduced(3, 2));
-    pressure.setBounds(panel.reduced(9, 0));
+    auto accessory = body.removeFromBottom(44);
+    inputLabel.setBounds(accessory.removeFromLeft(54));
+    inputMode.setBounds(accessory.removeFromLeft(132).reduced(3, 7));
+    statusLabel.setBounds(accessory.reduced(8, 7));
+    pressure.setBounds(body.reduced(62, 0));
 }
 
 void G3XOnePressureAudioProcessorEditor::timerCallback()

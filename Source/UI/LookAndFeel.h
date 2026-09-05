@@ -20,5 +20,6 @@ class LookAndFeel final : public juce::LookAndFeel_V4
 public:
     LookAndFeel();
     void drawRotarySlider(juce::Graphics&, int, int, int, int, float, float, float, juce::Slider&) override;
+    void drawToggleButton(juce::Graphics&, juce::ToggleButton&, bool, bool) override;
 };
 }
